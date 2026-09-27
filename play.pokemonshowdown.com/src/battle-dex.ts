@@ -536,12 +536,16 @@ export const Dex = new class implements ModdedDex {
 		if (dex.gen === 7 && formatid.includes('letsgo')) {
 			dex = Dex.mod('gen7letsgo' as ID);
 		}
+		if (dex.gen )
 		if (dex.gen === 8 && formatid.includes('bdsp')) {
 			dex = Dex.mod('gen8bdsp' as ID);
 		}
 		if (dex.gen === 9 && formatid.includes('champions')) {
 			dex = Dex.mod('champions' as ID);
 		}
+		if (formatid.includes('extremeyellow')) {
+    		dex = Dex.mod('gen1extremeyellow' as ID);
+		}	
 		return dex;
 	}
 

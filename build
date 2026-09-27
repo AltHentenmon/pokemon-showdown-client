@@ -83,4 +83,7 @@ if (full) {
 	}
 }
 
-execSync(`node ./build-tools/update` + full, options);
+execSync('node ./build-tools/update ' + process.argv.slice(2).join(' '), {
+    cwd: __dirname,
+    stdio: 'inherit'
+});

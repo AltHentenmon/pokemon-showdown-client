@@ -14,7 +14,7 @@ if (!fs.existsSync('caches/pokemon-showdown')) {
 		console.error('Missing caches/pokemon-showdown. Check out the server before using --no-update.');
 		process.exit(1);
 	}
-	child_process.execSync('git clone https://github.com/smogon/pokemon-showdown.git', {
+	child_process.execSync('git clone https://github.com/AltHentenmon/pokemon-showdown.git', {
 		cwd: 'caches',
 	});
 }
@@ -276,6 +276,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		7.1,
 		5.1,
 		3.1, 3.11,
+		1.1,
 	];
 
 	// process.stdout.write("\n  ");
@@ -300,6 +301,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const isBW1 = genIdent === 5.1;
 		const isRS = genIdent === 3.1;
 		const isFRLG = genIdent === 3.11;
+		const isExtremeYellow = genIdent === 1.1;
 		const gen = (() => {
 			let genStr = 'gen' + genNum;
 			if (isSSDLC1) genStr += 'dlc1';
@@ -312,6 +314,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			if (isBW1) genStr += 'bw1';
 			if (isRS) genStr += 'rs';
 			if (isFRLG) genStr += 'frlg';
+			if (isExtremeYellow) genStr += 'extremeyellow';
 			if (isChampions || isNDChampions) genStr = 'champions';
 			return genStr;
 		})();
@@ -451,7 +454,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 					'convergence', 'crossevolution', 'categoryswap', 'ferventimpersonation', 'foresighters', 'formemons', 'fortemons', 'franticfusions',
 					'fullpotential', 'inheritance', 'inverse', 'natureswap', 'partnersincrime', 'passiveaggressive', 'pokebilities',
 					'pokemoves', 'relayrace', 'revelationmons', 'sharingiscaring', 'teradonation', 'teraoverride', 'thecardgame',
-					'thelosersgame', 'trademarked', 'triples', 'typesplit', 'voltturnmayhem', 'flipped', 'monotype',
+					'thelosersgame', 'trademarked', 'triples', 'typesplit', 'voltturnmayhem', 'flipped', 'monotype', 'extremeyellow',
 					'aaa', 'bh', 'doubles', // natdex abbreviations
 					'tiershift', 'linked', 'pokebilitiesaaa',
 				])) {
@@ -595,6 +598,13 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable[gen].formatSlices = formatSlices;
 			BattleTeambuilderTable[gen].nonstandardMoves = nonstandardMoves;
 			BattleTeambuilderTable[gen].learnsets = {};
+		} else if (isExtremeYellow) {
+			BattleTeambuilderTable['gen1extremeyellow'] = {};
+			BattleTeambuilderTable['gen1extremeyellow'].learnsets = {};
+			BattleTeambuilderTable['gen1extremeyellow'].tiers = tiers;
+			BattleTeambuilderTable['gen1extremeyellow'].metagameBans = metagameBans;
+			BattleTeambuilderTable['gen1extremeyellow'].overrideTier = overrideTier;
+			BattleTeambuilderTable['gen1extremeyellow'].formatSlices = formatSlices;
 		} else {
 			BattleTeambuilderTable[gen] = {};
 			BattleTeambuilderTable[gen].overrideTier = overrideTier;
@@ -613,6 +623,9 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const tierOrder = (() => {
 			if (isVGC || isGen9BH) {
 				return ["Mythical", "Restricted", "Regular", "NFE", "LC"];
+			}
+			if (isExtremeYellow) {
+				return ["Uber", "OU", "UUBL", "UU", "RUBL", "RU", "NUBL", "NU", "PUBL", "PU", "ZUBL", "ZU", "NFE", "LC"]
 			}
 			if (isRS) {
 				return ["Regular", "NFE", "LC", "Uber"];
@@ -1208,7 +1221,19 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 	}
+	const ExtremeYellowLearnsets = Dex.mod('gen1extremeyellow').data.Learnsets;
 
+		for (const id in ExtremeYellowLearnsets) {
+			const entry = ExtremeYellowLearnsets[id];
+		
+		if (!entry || !entry.learnset) continue;
+		
+			BattleTeambuilderTable['gen1extremeyellow'].learnsets[id] = {};
+		
+		for (const moveid in entry.learnset) {
+			BattleTeambuilderTable['gen1extremeyellow'].learnsets[id][moveid] = '1';
+		}
+	}	
 	// Client relevant data that should be overridden by past gens and mods
 	const overrideSpeciesKeys = [
 		'abilities', 'baseStats', 'cosmeticFormes', 'isNonstandard', 'requiredItems', 'types', 'unreleasedHidden',
@@ -1307,7 +1332,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	//
 
 	for (const mod of [
-		'gen3rs', 'gen3frlg', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen9ssb', 'champions',
+		'gen3rs', 'gen3frlg', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen9ssb', 'champions', 'gen1extremeyellow',
 	]) {
 		const modDex = Dex.mod(mod);
 		const modData = modDex.data;

@@ -27,6 +27,9 @@
 				if (this.curTeam.format.includes('letsgo')) {
 					this.curTeam.dex = Dex.mod('gen7letsgo');
 				}
+				if (this.curTeam.format.includes('extremeyellow')) {
+					this.curTeam.dex = Dex.mod('gen1extremeyellow');
+				}
 				if (this.curTeam.format.includes('bdsp')) {
 					this.curTeam.dex = Dex.mod('gen8bdsp');
 				}
